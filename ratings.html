@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate Our App/Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .rating-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Spacing between stars */
+            margin-bottom: 25px;
+        }
+        .star-input {
+            display: none; /* Hide the actual radio button */
+        }
+        .star-label {
+            font-size: 2em; /* Size of the star character */
+            cursor: pointer;
+            color: #ccc; /* Default star color (grey) */
+            transition: color 0.2s ease-in-out;
+            user-select: none; /* Prevent text selection */
+        }
+        /* Style for checked radio button labels */
+        .star-input:checked + .star-label {
+            color: #ffc107; /* Gold color for selected star */
+        }
+        /* Style for labels before the checked one */
+        .star-input:checked ~ .star-label {
+            color: #ccc; /* Reset color for stars after the checked one */
+        }
+        /* Style for labels (stars) that are checked or precede a checked one */
+        .star-input:checked ~ .star-label:not(.star-input + .star-label) {
+            color: #ffc107; /* Apply gold to all stars up to the checked one */
+        }
+
+
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical; /* Allow vertical resizing */
+            min-height: 80px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .thanks-message {
+            margin-top: 20px;
+            color: green;
+            font-weight: bold;
+            display: none; /* Hidden by default */
+        }
+    </style>
+</head>
+<body>
+    <div class="rating-container">
+        <h2>How would you rate our app/service?</h2>
+        <form id="ratingForm">
+            <div class="stars">
+                <input type="radio" id="star5" name="rating" value="5" class="star-input" required>
+                <label for="star5" class="star-label">&#9733;</label>
+                <input type="radio" id="star4" name="rating" value="4" class="star-input">
+                <label for="star4" class="star-label">&#9733;</label>
+                <input type="radio" id="star3" name="rating" value="3" class="star-input">
+                <label for="star3" class="star-label">&#9733;</label>
+                <input type="radio" id="star2" name="rating" value="2" class="star-input">
+                <label for="star2" class="star-label">&#9733;</label>
+                <input type="radio" id="star1" name="rating" value="1" class="star-input">
+                <label for="star1" class="star-label">&#9733;</label>
+            </div>
+            <textarea id="feedback" placeholder="Optional: Tell us more about your experience..." rows="4"></textarea>
+            <button type="submit">Submit Rating</button>
+            <p id="thanksMessage" class="thanks-message">Thank you for your feedback!</p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('ratingForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const selectedRating = document.querySelector('input[name="rating"]:checked');
+            const feedbackText = document.getElementById('feedback').value;
+
+            if (selectedRating) {
+                const ratingValue = selectedRating.value;
+                console.log('User Rating:', ratingValue);
+                console.log('User Feedback:', feedbackText);
+
+                // Here you would typically send this data to a server
+                // using Fetch API or XMLHttpRequest.
+                // Example (pseudo-code):
+                /*
+                fetch('/submit-rating', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rating: ratingValue, feedback: feedbackText }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    document.getElementById('thanksMessage').style.display = 'block';
+                    document.getElementById('ratingForm').reset(); // Clear form
+                    // Hide stars if needed (or reset their color)
+                    document.querySelectorAll('.star-input').forEach(input => input.checked = false);
+                    document.querySelectorAll('.star-label').forEach(label => label.style.color = '#ccc');
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    alert('There was an error submitting your rating. Please try again.');
+                });
+                */
+
+                // For this simple example, just show thanks message and reset form
+                document.getElementById('thanksMessage').style.display = 'block';
+                document.getElementById('ratingForm').reset(); // Clear text area
+                // Reset star colors after submission
+                document.querySelectorAll('.star-input').forEach(input => input.checked = false);
+                document.querySelectorAll('.star-label').forEach(label => label.style.color = '#ccc');
+
+
+                // You can add a small timeout to hide the message again if desired
+                setTimeout(() => {
+                    document.getElementById('thanksMessage').style.display = 'none';
+                }, 3000); // Hide after 3 seconds
+
+            } else {
+                alert('Please select a star rating!');
+            }
+        });
+
+        // This JS ensures that when a radio button is checked,
+        // all preceding labels (stars) are also styled.
+        // The CSS alone doesn't quite achieve the "fill up to here" effect dynamically
+        // without complex `:has()` selectors (which aren't fully supported everywhere yet).
+        document.querySelectorAll('.star-input').forEach(input => {
+            input.addEventListener('change', () => {
+                const labels = document.querySelectorAll('.star-label');
+                const checkedIndex = Array.from(input.parentNode.children).indexOf(input);
+
+                labels.forEach((label, index) => {
+                    // Labels are reversed in HTML, so adjust logic
+                    const labelValue = parseInt(label.getAttribute('for').replace('star', ''));
+                    if (labelValue <= parseInt(input.value)) {
+                        label.style.color = '#ffc107';
+                    } else {
+                        label.style.color = '#ccc';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
